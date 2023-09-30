@@ -1,0 +1,835 @@
+import numpy as np
+import tkinter as tk
+from tkinter import messagebox
+import matplotlib.pyplot as plt
+
+
+
+
+
+
+def option_a_selected():
+    root.destroy()
+    wachstum =[]
+    zeit = []
+    timecount = 0 
+    window = tk.Tk()
+    window.title("Conway's Game of Life")
+    eingabe_label = tk.Label(window, text="Geben Sie eine ganze Zahl ein:")
+    eingabe_label.pack()
+
+    eingabe = tk.Entry(window)
+    eingabe.pack()
+
+    def spielfeld():
+        try:
+            groeße = int(eingabe.get())
+
+            feld = np.zeros((groeße, groeße))
+
+            window.destroy()
+
+            def zellen(zeile, spalte):
+                if feld[zeile, spalte] == 0:
+                    feld[zeile][spalte] = 1
+                    buttons[zeile][spalte].configure(bg="green")
+                else:
+                    feld[zeile, spalte] = 0
+                    buttons[zeile][spalte].configure(bg="white")
+                return feld
+            buttons = []
+            spielfeld = tk.Tk()
+            spielfeld.title("Conway's Game of Life")
+            
+            for i in range(groeße):
+                z_buttons = []
+                for j in range(groeße):
+                    button = tk.Button(spielfeld, bg="white", command=lambda r=i, c=j: zellen(r, c))
+                    button.grid(row=i, column=j)
+                    z_buttons.append(button)
+                buttons.append(z_buttons)
+            
+            
+           
+            def algo():
+                nonlocal timecount
+                timecount += 1
+                zeit.append(timecount)
+                wachstum.append(np.sum(feld))
+                
+                help_matrix = np.zeros((groeße + 2, groeße + 2))
+                for i in range(1, groeße + 1):
+                        for j in range(1, groeße + 1):
+                            help_matrix[i, j] = feld[i - 1, j - 1]
+                            
+                def test_nachbarn(a, b):
+                    counter = -1
+                    
+                    
+                    for i in range(-1, 2):
+                        for j in range(-1, 2):
+                            if help_matrix[a + 1 + i, b + 1 + j] == 1:
+                                    counter += 1
+                    
+                        
+                    return counter
+
+
+                def game(matrix):
+                    new_matrix = np.zeros((groeße, groeße))
+                    new_matrix = matrix
+                    for i in range(0, groeße):
+                        for j in range(0, groeße):
+                            if matrix[i, j] == 1:
+                                if test_nachbarn(i , j) > 3 or test_nachbarn(i, j) < 2:
+                                    new_matrix[i, j] = 0
+                                    
+                            else:
+                                if test_nachbarn(i, j) == 2:
+                                    new_matrix[i, j] = 1
+                    return new_matrix
+                
+                
+                new_matrix = game(feld)
+                def new(row, column, colur):
+                    buttons[row][column].configure(bg = colur)
+                    
+                    
+                for i in range(groeße):
+                    for j in range(groeße):
+                        if new_matrix[i,j] == 0:
+                            new(i,j, "white")
+                        else:
+                            new(i, j, "green")
+            
+            def graf():
+                plt.plot(zeit, wachstum)
+                plt.show()
+                spielfeld.destroy()
+                print(zeit)
+                print(wachstum)
+             
+            start = tk.Button(spielfeld, text = "Starten", command = algo)
+            start.grid(row= groeße + 1, columnspan = groeße)
+            ende = tk.Button(spielfeld, text = "Ende", command = graf)
+            ende.grid(row = groeße + 2, columnspan = groeße)
+            
+            
+            spielfeld.mainloop()
+
+            
+
+        except ValueError:
+            messagebox.showwarning("Fehler", "Keine ganze Zahl eingegeben")
+            option_a_selected()
+
+    start_button = tk.Button(window, text="Start", command=spielfeld)
+    start_button.pack()
+    
+    window.mainloop()
+    
+
+
+
+
+def option_b_selected():
+    root.destroy()
+    wachstum =[]
+    zeit = []
+    timecount = 0 
+    window = tk.Tk()
+    window.title("Conway's Game of Life")
+    eingabe_label = tk.Label(window, text="Geben Sie eine ganze Zahl ein:")
+    eingabe_label.pack()
+
+    eingabe = tk.Entry(window)
+    eingabe.pack()
+
+    def spielfeld():
+        try:
+            groeße = int(eingabe.get())
+
+            feld = np.zeros((groeße, groeße))
+
+            window.destroy()
+
+            def zellen(zeile, spalte):
+                if feld[zeile, spalte] == 0:
+                    feld[zeile][spalte] = 1
+                    buttons[zeile][spalte].configure(bg="green")
+                else:
+                    feld[zeile, spalte] = 0
+                    buttons[zeile][spalte].configure(bg="white")
+                return feld
+            buttons = []
+            spielfeld = tk.Tk()
+            spielfeld.title("Conway's Game of Life")
+            
+            for i in range(groeße):
+                z_buttons = []
+                for j in range(groeße):
+                    button = tk.Button(spielfeld, bg="white", command=lambda r=i, c=j: zellen(r, c))
+                    button.grid(row=i, column=j, sticky="nsew")
+                    z_buttons.append(button)
+                buttons.append(z_buttons)
+            
+            
+           
+            def algo():
+                nonlocal timecount
+                timecount += 1
+                zeit.append(timecount)
+                wachstum.append(np.sum(feld))
+                
+                help_matrix = np.zeros((groeße + 2, groeße + 2))
+                for i in range(1, groeße + 1):
+                        for j in range(1, groeße + 1):
+                            help_matrix[i, j] = feld[i - 1, j - 1]
+                
+                help_matrix[0,0] = feld[groeße - 1, groeße - 1]
+                help_matrix[ groeße + 1, 0] = feld[0, groeße - 1]
+                help_matrix[0, groeße + 1] = feld[ groeße - 1, 0]
+                help_matrix[groeße +1, groeße + 1] = feld[0,0]
+                for i in range( 0, groeße ):
+                        help_matrix[0, i + 1] = feld[groeße - 1, i]
+                        help_matrix[ i + 1, 0] = feld[ i, groeße - 1]
+                        help_matrix[groeße + 1, i + 1] = feld[0, i]
+                        help_matrix[i + 1, groeße + 1] = feld[i, 0]
+                            
+                def test_nachbarn(a, b):
+                    counter = -1
+                    
+                    
+                    for i in range(-1, 2):
+                        for j in range(-1, 2):
+                            if help_matrix[a + 1 + i, b + 1 + j] == 1:
+                                    counter += 1
+                    
+                        
+                    return counter
+
+
+                def game(matrix):
+                    new_matrix = np.zeros((groeße, groeße))
+                    new_matrix = matrix
+                    for i in range(0, groeße):
+                        for j in range(0, groeße):
+                            if matrix[i, j] == 1:
+                                if test_nachbarn(i , j) > 3 or test_nachbarn(i, j) < 2:
+                                    new_matrix[i, j] = 0
+                                    
+                            else:
+                                if test_nachbarn(i, j) == 2:
+                                    new_matrix[i, j] = 1
+                    return new_matrix
+                
+                
+                new_matrix = game(feld)
+                def new(row, column, colur):
+                    buttons[row][column].configure(bg = colur)
+                    
+                    
+                for i in range(groeße):
+                    for j in range(groeße):
+                        if new_matrix[i,j] == 0:
+                            new(i,j, "white")
+                        else:
+                            new(i, j, "green")
+            
+            def graf():
+                plt.plot(zeit, wachstum)
+                plt.show()
+                spielfeld.destroy()
+                print(zeit)
+                print(wachstum)
+             
+            start = tk.Button(spielfeld, text = "Starten", command = algo)
+            start.grid(row= groeße + 1, columnspan = groeße)
+            ende = tk.Button(spielfeld, text = "Ende", command = graf)
+            ende.grid(row = groeße + 2, columnspan = groeße)
+            
+            
+            spielfeld.mainloop()
+
+            
+
+        except ValueError:
+            messagebox.showwarning("Fehler", "Keine ganze Zahl eingegeben")
+            option_b_selected()
+
+    start_button = tk.Button(window, text="Start", command=spielfeld)
+    start_button.pack()
+    
+    window.mainloop()
+            
+
+
+def option_c_selected():
+    root.destroy()
+    wachstum = []
+    window = tk.Tk()
+    window.title("Conway's Game of Life")
+    eingabe_label = tk.Label(window, text="Geben Sie eine ganze Zahl ein:")
+    eingabe_label.pack()
+
+    eingabe = tk.Entry(window)
+    eingabe.pack()
+    def spielfeld():
+        try:
+            groeße = int(eingabe.get())
+
+            feld = np.zeros((groeße, groeße))
+
+            window.destroy()
+
+            def zellen(zeile, spalte):
+                if feld[zeile, spalte] == 0:
+                    feld[zeile][spalte] = 1
+                    buttons[zeile][spalte].configure(bg="green")
+                else:
+                    feld[zeile, spalte] = 0
+                    buttons[zeile][spalte].configure(bg="white")
+                return feld
+            buttons = []
+            spielfeld = tk.Tk()
+            spielfeld.title("Conway's Game of Life")
+            
+            for i in range(groeße):
+                z_buttons = []
+                for j in range(groeße):
+                    button = tk.Button(spielfeld, bg="white", command=lambda r=i, c=j: zellen(r, c))
+                    button.grid(row=i, column=j)
+                    z_buttons.append(button)
+                buttons.append(z_buttons)
+            
+            length_button = tk.Label(spielfeld, text= "Wähle die Anzahl der Durchläufe der Simulation:")
+            length_button.grid(row= groeße + 1, columnspan = groeße)
+            length = tk.Entry(spielfeld)
+            length.grid(row= groeße + 2, columnspan = groeße)
+            
+            def start():
+                
+                try:
+                    
+                    anzahl = int(length.get())
+                    
+                    spielfeld.destroy()
+                    loop = 0
+                    
+                    def sim(matrix):
+                        
+                        
+                        nonlocal loop
+                        if loop == anzahl :
+                            return matrix
+                        
+                        
+                        if np.sum(matrix[matrix.shape[0] - 1]) + np.sum(matrix[0]) + np.sum(matrix[:, matrix.shape[0] - 1]) + np.sum(matrix[:, 0]) != 0:
+                            er_matrix = np.zeros((matrix.shape[0] + 2, matrix.shape[0] + 2))
+                            for i in range(1, matrix.shape[0] + 1):
+                                    for j in range(1, matrix.shape[0] + 1):
+                                        er_matrix[i, j] = matrix[i - 1, j - 1]
+                            matrix = er_matrix
+                    
+                        elif np.sum(matrix[matrix.shape[0] - 2]) + np.sum(matrix[1]) + np.sum(matrix[:, matrix.shape[0] - 2]) + np.sum(matrix[:, 1]) == 0:
+                            rand_entfernt = matrix[1:-1, 1:-1]
+                            matrix = rand_entfernt
+                         
+                            
+                         
+                            
+                        help_matrix = np.zeros((matrix.shape[0] + 2, matrix.shape[0] + 2))
+                        for i in range(1, matrix.shape[0] + 1):
+                                for j in range(1, matrix.shape[0] + 1):
+                                    help_matrix[i, j] = matrix[i - 1, j - 1]
+                                    
+                                    
+                        def test_nachbarn(a, b):
+                            counter = -1
+                            
+                            
+                            for i in range(-1, 2):
+                                for j in range(-1, 2):
+                                    if help_matrix[a + 1 + i, b + 1 + j] == 1:
+                                            counter += 1
+                            
+                                
+                            return counter
+
+
+                        
+                        new_matrix = np.zeros((matrix.shape))
+                        new_matrix = matrix
+                        wachstum.append(np.sum(new_matrix))
+                        loop += 1
+                        for i in range(0, matrix.shape[0]):
+                            for j in range(0, matrix.shape[0]):
+                                if matrix[i, j] == 1:
+                                    if test_nachbarn(i , j) > 3 or test_nachbarn(i, j) < 2:
+                                        new_matrix[i, j] = 0
+                                            
+                                else:
+                                    if test_nachbarn(i, j) == 2:
+                                        new_matrix[i, j] = 1
+                        
+                        return sim(new_matrix)
+                    
+                    result = sim(feld)
+                    zeit = []
+                    for i in range(anzahl + 1):
+                        zeit.append(i)
+                        
+                    fig, (ax1, ax2) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [3, 1]})
+                    
+                    ax1.imshow(result, cmap='viridis', interpolation='nearest')
+                    
+                    ax1.set_title('Endresultat')
+
+                    
+                    
+                    
+                    ax2.plot(zeit, wachstum)
+                    ax2.set_title('Wachstum')
+                    ax2.set_xlabel('Zeit')
+                    ax2.set_ylabel('lebende Zellen')
+
+                    plt.tight_layout()
+                    
+                    plt.show()
+                    
+                    
+                    print(wachstum)
+                    print(result)
+                    print(zeit)
+                    
+                
+                except ValueError:
+                 messagebox.showwarning("Fehler", "Keine ganze Zahl eingegeben")
+                 spielfeld()
+            
+            
+            
+            start_sim = tk.Button(spielfeld, text = "Start", command = start)
+            start_sim.grid(row = groeße + 3, columnspan = groeße )  
+            
+            spielfeld.mainloop()    
+        except ValueError:
+            messagebox.showwarning("Fehler", "Keine ganze Zahl eingegeben")
+            option_c_selected()
+   
+    start_button = tk.Button(window, text="Start", command=spielfeld)
+    start_button.pack()
+    
+    window.mainloop()
+
+
+def präsentation():
+    root.destroy()
+    wachstum =[]
+    zeit = []
+    timecount = 0 
+    window = tk.Tk()
+    window.title("Conway's Game of Life")
+    
+
+    feld = np.zeros((38,38))
+    
+    def pulsar():
+        rows = [6, 6, 6, 11, 11, 11, 13, 13, 13, 18, 18, 18, 6, 6, 6, 11, 11, 11, 13, 13, 13, 18, 18, 18, 8, 9, 10, 8, 9, 10, 8, 9, 10, 14, 15, 16, 14, 15, 16, 14, 15, 16, 14, 15, 16, 8, 9, 10]
+        cols = [8, 9, 10, 8, 9, 10, 8, 9, 10, 8, 9, 10, 14, 15, 16, 14, 15, 16, 14, 15, 16, 14, 15, 16, 6, 6, 6, 11, 11, 11, 13, 13, 13, 6, 6, 6, 11, 11, 11, 13, 13, 13, 18, 18, 18, 18, 18, 18]
+
+        feld[rows, cols] = 1
+        
+        spielfeld(feld)
+     
+        
+     
+    def gun():
+        rows = [0, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 4, 4, 5, 5, 3, 3, 4, 4, 5, 5, 5, 5, 6, 6, 7, 7, 8, 8]
+        cols =[25, 25, 23, 22, 21, 14, 13, 36, 35, 36, 35, 22, 21, 22, 21, 23, 25, 25, 1, 2, 1, 2, 16, 12, 11, 17, 11, 15, 17, 18, 11, 17, 12, 16, 13, 14]
+        
+        
+        feld[rows, cols] = 1
+        
+        spielfeld(feld)
+        starten()
+    
+    def LWSS():
+        rows = [8, 8, 10, 10, 9, 11, 11, 11, 11]
+        cols = [13, 16,16, 12, 12, 12, 13, 14, 15]
+        feld[rows, cols] = 1
+        SpaceShip(feld)
+    
+    
+    eingabe_label = tk.Button(window, text="Pulsar", command= pulsar)
+    eingabe_label.pack()
+    
+    spaceship_button = tk.Button(window, text = "WLSS", command= LWSS)
+    spaceship_button.pack()
+    
+    gun_button = tk.Button(window, text="Gosper glider gun", command= gun)
+    gun_button.pack()
+    
+    
+    def starten():
+            wachstum =[0]
+            
+            anzahl = 200
+            
+            
+            loop = 0
+            
+            
+            def sim(matrix):
+                
+                nonlocal loop
+                if loop == anzahl :
+                    return matrix
+                
+                
+                if np.sum(matrix[matrix.shape[0] - 1]) + np.sum(matrix[0]) + np.sum(matrix[:, matrix.shape[0] - 1]) + np.sum(matrix[:, 0]) != 0:
+                    er_matrix = np.zeros((matrix.shape[0] + 2, matrix.shape[0] + 2))
+                    for i in range(1, matrix.shape[0] + 1):
+                            for j in range(1, matrix.shape[0] + 1):
+                                er_matrix[i, j] = matrix[i - 1, j - 1]
+                    matrix = er_matrix
+            
+                elif np.sum(matrix[matrix.shape[0] - 2]) + np.sum(matrix[1]) + np.sum(matrix[:, matrix.shape[0] - 2]) + np.sum(matrix[:, 1]) == 0:
+                    rand_entfernt = matrix[1:-1, 1:-1]
+                    matrix = rand_entfernt
+                 
+                    
+                 
+                    
+                help_matrix = np.zeros((matrix.shape[0] + 2, matrix.shape[0] + 2))
+                for i in range(1, matrix.shape[0] + 1):
+                        for j in range(1, matrix.shape[0] + 1):
+                            help_matrix[i, j] = matrix[i - 1, j - 1]
+                            
+                            
+                def test_nachbarn(a, b):
+                    counter = -1
+                    
+                    
+                    for i in range(-1, 2):
+                        for j in range(-1, 2):
+                            if help_matrix[a + 1 + i, b + 1 + j] == 1:
+                                    counter += 1
+                    
+                        
+                    return counter
+
+
+                
+                new_matrix = np.zeros((matrix.shape))
+                new_matrix = matrix
+                wachstum.append(np.sum(new_matrix))
+                loop += 1
+                for i in range(0, matrix.shape[0]):
+                    for j in range(0, matrix.shape[0]):
+                        if matrix[i, j] == 1:
+                            if test_nachbarn(i , j) > 3 or test_nachbarn(i, j) < 2:
+                                new_matrix[i, j] = 0
+                                    
+                        else:
+                            if test_nachbarn(i, j) == 2:
+                                new_matrix[i, j] = 1
+                
+                return sim(new_matrix)
+            
+            result = sim(feld)
+            zeit = []
+            for i in range(anzahl + 1):
+                zeit.append(i)
+                
+            fig, (ax1, ax2) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [3, 1]})
+            
+            ax1.imshow(result, cmap='viridis', interpolation='nearest')
+            
+            ax1.set_title('Endresultat')
+
+            
+            
+            
+            ax2.plot(zeit, wachstum)
+            ax2.set_title('Wachstum')
+            ax2.set_xlabel('Zeit')
+            ax2.set_ylabel('lebende Zellen')
+
+            plt.tight_layout()
+            
+            plt.show()
+            
+            
+            print(wachstum)
+            print(result)
+            print(zeit)
+            
+        
+       
+    
+    
+    def SpaceShip(feld):
+        groeße = 38
+
+        
+
+        window.destroy()
+
+        def zellen(zeile, spalte):
+            if feld[zeile, spalte] == 0:
+                feld[zeile][spalte] = 1
+                buttons[zeile][spalte].configure(bg="green")
+            else:
+                feld[zeile, spalte] = 0
+                buttons[zeile][spalte].configure(bg="white")
+            return feld
+        
+        buttons = []
+        spielfeld = tk.Tk()
+        spielfeld.title("Conway's Game of Life")
+        
+        for i in range(groeße):
+            z_buttons = []
+            for j in range(groeße):
+                button = tk.Button(spielfeld, bg="white", command=lambda r=i, c=j: zellen(r, c))
+                
+                button.grid(row=i, column=j)
+                z_buttons.append(button)
+            buttons.append(z_buttons) 
+        
+        for i in range(groeße):
+            for j in range(groeße):
+                     
+                if feld[i, j] == 1:
+                    buttons[i][j].configure(bg="green")
+                    
+                    
+        def algo():
+            nonlocal timecount
+            timecount += 1
+            zeit.append(timecount)
+            wachstum.append(np.sum(feld))
+            
+            help_matrix = np.zeros((groeße + 2, groeße + 2))
+            for i in range(1, groeße + 1):
+                    for j in range(1, groeße + 1):
+                        help_matrix[i, j] = feld[i - 1, j - 1]
+            
+            help_matrix[0,0] = feld[groeße - 1, groeße - 1]
+            help_matrix[ groeße + 1, 0] = feld[0, groeße - 1]
+            help_matrix[0, groeße + 1] = feld[ groeße - 1, 0]
+            help_matrix[groeße +1, groeße + 1] = feld[0,0]
+            for i in range( 0, groeße ):
+                    help_matrix[0, i + 1] = feld[groeße - 1, i]
+                    help_matrix[ i + 1, 0] = feld[ i, groeße - 1]
+                    help_matrix[groeße + 1, i + 1] = feld[0, i]
+                    help_matrix[i + 1, groeße + 1] = feld[i, 0]
+                        
+            def test_nachbarn(a, b):
+                counter = -1
+                
+                
+                for i in range(-1, 2):
+                    for j in range(-1, 2):
+                        if help_matrix[a + 1 + i, b + 1 + j] == 1:
+                                counter += 1
+                
+                    
+                return counter
+
+
+            def game(matrix):
+                new_matrix = np.zeros((groeße, groeße))
+                new_matrix = matrix
+                for i in range(0, groeße):
+                    for j in range(0, groeße):
+                        if matrix[i, j] == 1:
+                            if test_nachbarn(i , j) > 3 or test_nachbarn(i, j) < 2:
+                                new_matrix[i, j] = 0
+                                
+                        else:
+                            if test_nachbarn(i, j) == 2:
+                                new_matrix[i, j] = 1
+                return new_matrix
+            
+            
+            new_matrix = game(feld)
+            def new(row, column, colur):
+                buttons[row][column].configure(bg = colur)
+                
+                
+            for i in range(groeße):
+                for j in range(groeße):
+                    if new_matrix[i,j] == 0:
+                        new(i,j, "white")
+                    else:
+                        new(i, j, "green")
+             
+        def graf():
+                 plt.plot(zeit, wachstum)
+                 plt.show()
+                 spielfeld.destroy()
+                 print(zeit)
+                 print(wachstum)
+                        
+                        
+        def start2():
+                algo()
+                spielfeld.after(10, start2)
+
+            
+            
+            
+        start_button = tk.Button(spielfeld, text = "Starten", command = start2)
+        start_button.grid(row= groeße + 1, columnspan = groeße)
+        ende = tk.Button(spielfeld, text = "Ende", command = graf)
+        ende.grid(row = groeße + 2, columnspan = groeße)
+            
+            
+        spielfeld.mainloop()
+        
+
+    def spielfeld(feld):
+            groeße = 38
+
+            
+
+            window.destroy()
+
+            def zellen(zeile, spalte):
+                if feld[zeile, spalte] == 0:
+                    feld[zeile][spalte] = 1
+                    buttons[zeile][spalte].configure(bg="green")
+                else:
+                    feld[zeile, spalte] = 0
+                    buttons[zeile][spalte].configure(bg="white")
+                return feld
+            
+            buttons = []
+            spielfeld = tk.Tk()
+            spielfeld.title("Conway's Game of Life")
+            
+            for i in range(groeße):
+                z_buttons = []
+                for j in range(groeße):
+                    button = tk.Button(spielfeld, bg="white", command=lambda r=i, c=j: zellen(r, c))
+                    
+                    button.grid(row=i, column=j)
+                    z_buttons.append(button)
+                buttons.append(z_buttons) 
+            
+            for i in range(groeße):
+                for j in range(groeße):
+                         
+                    if feld[i, j] == 1:
+                        buttons[i][j].configure(bg="green")
+                    
+                
+           
+                    
+               
+            
+            
+           
+            def algo():
+                nonlocal timecount
+                timecount += 1
+                zeit.append(timecount)
+                wachstum.append(np.sum(feld))
+                
+                help_matrix = np.zeros((groeße + 2, groeße + 2))
+                for i in range(1, groeße + 1):
+                        for j in range(1, groeße + 1):
+                            help_matrix[i, j] = feld[i - 1, j - 1]
+                            
+                def test_nachbarn(a, b):
+                    counter = -1
+                    
+                    
+                    for i in range(-1, 2):
+                        for j in range(-1, 2):
+                            if help_matrix[a + 1 + i, b + 1 + j] == 1:
+                                    counter += 1
+                    
+                        
+                    return counter
+
+
+                def game(matrix):
+                    new_matrix = np.zeros((groeße, groeße))
+                    new_matrix = matrix
+                    for i in range(0, groeße):
+                        for j in range(0, groeße):
+                            if matrix[i, j] == 1:
+                                if test_nachbarn(i , j) > 3 or test_nachbarn(i, j) < 2:
+                                    new_matrix[i, j] = 0
+                                    
+                            else:
+                                if test_nachbarn(i, j) == 2:
+                                    new_matrix[i, j] = 1
+                    return new_matrix
+                
+                
+                new_matrix = game(feld)
+                def new(row, column, colur):
+                    buttons[row][column].configure(bg = colur)
+                    
+                    
+                for i in range(groeße):
+                    for j in range(groeße):
+                        if new_matrix[i,j] == 0:
+                            new(i,j, "white")
+                        else:
+                            new(i, j, "green")
+            
+            def graf():
+                plt.plot(zeit, wachstum)
+                plt.show()
+                spielfeld.destroy()
+                print(zeit)
+                print(wachstum)
+            
+                
+            
+            def start2():
+                algo()
+                spielfeld.after(10, start2)
+
+            
+            
+            
+            start_button = tk.Button(spielfeld, text = "Starten", command = start2)
+            start_button.grid(row= groeße + 1, columnspan = groeße)
+            ende = tk.Button(spielfeld, text = "Ende", command = graf)
+            ende.grid(row = groeße + 2, columnspan = groeße)
+            
+            
+            spielfeld.mainloop()
+
+            
+
+
+
+    
+    window.mainloop()            
+            
+root = tk.Tk()
+
+root.title("Conway's Game of Life")
+
+button_a = tk.Button(root, text="toder Rand", command=option_a_selected)
+button_a.pack()
+
+
+button_b = tk.Button(root, text="toroider Rand", command=option_b_selected)
+button_b.pack()
+
+
+button_c = tk.Button(root, text="Unendlicher Rand", command=option_c_selected)
+button_c.pack()
+
+button_d = tk.Button(root, text = "Präsentation", command =präsentation)
+button_d.pack()
+
+root.mainloop()
